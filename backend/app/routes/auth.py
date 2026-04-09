@@ -34,13 +34,19 @@ def login():
     """Login user and return JWT token"""
     data = request.get_json()
 
-    if not data or not data.get('username') or not data.get('password'):
-        return jsonify({'error': 'Missing username or password'}), 400
+    if not data or not data.get('password'):
+        return jsonify({'error': 'Missing credentials'}), 400
 
-    user = User.query.filter_by(username=data['username']).first()
+    identifier = data.get('username') or data.get('email')
+    if not identifier:
+        return jsonify({'error': 'Missing username or email'}), 400
+
+    # Accept login by either username or email
+    user = User.query.filter_by(username=identifier).first() or \
+           User.query.filter_by(email=identifier).first()
 
     if not user or not user.check_password(data['password']):
-        return jsonify({'error': 'Invalid username or password'}), 401
+        return jsonify({'error': 'Invalid credentials'}), 401
 
     access_token = create_access_token(identity=user.id)
     return jsonify({
