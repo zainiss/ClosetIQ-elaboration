@@ -41,8 +41,8 @@ const PhotoUpload = ({ onItemAdded }) => {
     e.preventDefault();
     setError(null);
 
-    if (!formData.name || !formData.category || !formData.image) {
-      setError('Please fill in all required fields');
+    if (!formData.name || !formData.category) {
+      setError('Name and category are required');
       return;
     }
 
@@ -51,7 +51,9 @@ const PhotoUpload = ({ onItemAdded }) => {
     data.append('category', formData.category);
     data.append('color', formData.color);
     data.append('brand', formData.brand);
-    data.append('image', formData.image);
+    if (formData.image) {
+      data.append('image', formData.image);
+    }
 
     setLoading(true);
 

@@ -10,7 +10,7 @@ wardrobe_bp = Blueprint('wardrobe', __name__)
 @jwt_required()
 def get_items():
     """Get all wardrobe items for current user"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     items = WardrobeItem.query.filter_by(user_id=user_id).all()
     return jsonify([item.to_dict() for item in items]), 200
 
@@ -18,7 +18,7 @@ def get_items():
 @jwt_required()
 def get_item(item_id):
     """Get a single wardrobe item"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     item = WardrobeItem.query.filter_by(id=item_id, user_id=user_id).first()
 
     if not item:
@@ -30,7 +30,7 @@ def get_item(item_id):
 @jwt_required()
 def upload_photo():
     """Upload a clothing item via photo"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
 
     # Check if file is present
     if 'image' not in request.files:
@@ -70,7 +70,7 @@ def upload_photo():
 @jwt_required()
 def add_by_link():
     """Add a clothing item via product link or SKU"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
 
     if not data or not data.get('name') or not data.get('category'):
@@ -92,7 +92,7 @@ def add_by_link():
 @jwt_required()
 def update_item(item_id):
     """Update a wardrobe item"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     item = WardrobeItem.query.filter_by(id=item_id, user_id=user_id).first()
 
     if not item:
@@ -123,7 +123,7 @@ def update_item(item_id):
 @jwt_required()
 def delete_item(item_id):
     """Delete a wardrobe item"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     item = WardrobeItem.query.filter_by(id=item_id, user_id=user_id).first()
 
     if not item:
@@ -138,7 +138,7 @@ def delete_item(item_id):
 @jwt_required()
 def set_tags(item_id):
     """Set tags on a wardrobe item"""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     item = WardrobeItem.query.filter_by(id=item_id, user_id=user_id).first()
 
     if not item:

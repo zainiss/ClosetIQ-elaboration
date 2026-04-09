@@ -9,7 +9,7 @@ admin_bp = Blueprint('admin', __name__)
 
 def _require_admin():
     """Returns the current user if they are an admin, otherwise None."""
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
     if not user or not user.is_admin:
         return None

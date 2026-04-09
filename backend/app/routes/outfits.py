@@ -20,7 +20,7 @@ outfits_bp = Blueprint('outfits', __name__)
 @outfits_bp.route('/by-occasion', methods=['POST'])
 @jwt_required()
 def get_outfit_by_occasion():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
 
     if not data or not data.get('occasion'):
@@ -39,7 +39,7 @@ def get_outfit_by_occasion():
 @outfits_bp.route('/by-weather', methods=['POST'])
 @jwt_required()
 def get_outfit_by_weather():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
 
     if not data or ('temperature' not in data and 'condition' not in data):
@@ -63,7 +63,7 @@ def get_outfit_by_weather():
 @outfits_bp.route('/by-dress-code', methods=['POST'])
 @jwt_required()
 def get_outfit_by_dress_code():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
 
     if not data or not data.get('dress_code'):
@@ -82,7 +82,7 @@ def get_outfit_by_dress_code():
 @outfits_bp.route('/multiple', methods=['POST'])
 @jwt_required()
 def get_multiple_outfits():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json() or {}
 
     count = min(int(data.get('count', 3)), 10)
@@ -105,7 +105,7 @@ def get_multiple_outfits():
 @outfits_bp.route('/with-shoes', methods=['POST'])
 @jwt_required()
 def get_outfit_with_shoes():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json() or {}
 
     result = recommend_with_shoes(user_id, occasion=data.get('occasion'))
@@ -121,7 +121,7 @@ def get_outfit_with_shoes():
 @outfits_bp.route('/by-color', methods=['POST'])
 @jwt_required()
 def get_outfit_by_color():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
 
     if not data or not data.get('color'):
@@ -140,7 +140,7 @@ def get_outfit_by_color():
 @outfits_bp.route('/with-item', methods=['POST'])
 @jwt_required()
 def get_outfit_with_item():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
 
     if not data or not data.get('item_id'):
@@ -164,7 +164,7 @@ def get_outfit_with_item():
 @outfits_bp.route('', methods=['GET'])
 @jwt_required()
 def list_outfits():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     outfits = Outfit.query.filter_by(user_id=user_id).all()
     return jsonify([outfit.to_dict() for outfit in outfits]), 200
 
@@ -172,7 +172,7 @@ def list_outfits():
 @outfits_bp.route('', methods=['POST'])
 @jwt_required()
 def save_outfit():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     data = request.get_json()
 
     if not data or not data.get('items') or not isinstance(data['items'], list):
