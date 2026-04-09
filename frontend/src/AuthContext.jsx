@@ -1,12 +1,19 @@
 import React, { createContext, useState, useCallback } from 'react';
-import { apiRequest, setToken, getToken } from './api/client';
+import { apiRequest, setToken } from './api/client';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setTokenState] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const storeAuth = (access_token, userData) => {
+    setToken(access_token);
+    setTokenState(access_token);
+    setUser(userData);
+  };
 
   const login = useCallback(async (email, password) => {
     setLoading(true);
@@ -16,9 +23,7 @@ export const AuthProvider = ({ children }) => {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
-      const { token, user: userData } = response;
-      setToken(token);
-      setUser(userData);
+      storeAuth(response.access_token, response.user);
       return true;
     } catch (err) {
       setError(err.message);
@@ -36,9 +41,7 @@ export const AuthProvider = ({ children }) => {
         method: 'POST',
         body: JSON.stringify({ username, email, password }),
       });
-      const { token, user: userData } = response;
-      setToken(token);
-      setUser(userData);
+      storeAuth(response.access_token, response.user);
       return true;
     } catch (err) {
       setError(err.message);
@@ -50,10 +53,9 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     setToken(null);
+    setTokenState(null);
     setUser(null);
   }, []);
-
-  const isAuthenticated = !!getToken();
 
   return (
     <AuthContext.Provider
@@ -64,7 +66,7 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
-        isAuthenticated,
+        isAuthenticated: !!token,
       }}
     >
       {children}
