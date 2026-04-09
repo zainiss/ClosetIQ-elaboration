@@ -122,6 +122,65 @@ def build_outfit_from_items(items):
 
     return outfit
 
+def recommend_by_color(user_id, color):
+    """
+    Recommend outfit items that match a given color preference.
+
+    Args:
+        user_id: ID of the user
+        color: Color string (e.g., "black", "white", "blue")
+
+    Returns:
+        List of WardrobeItem objects matching the color
+    """
+    items = WardrobeItem.query.filter_by(user_id=user_id).all()
+    color_lower = color.lower()
+
+    matched = [i for i in items if i.color and color_lower in i.color.lower()]
+
+    if not matched:
+        return random.sample(items, min(3, len(items))) if items else []
+
+    return matched[:5]
+
+
+def recommend_with_item(user_id, item_id):
+    """
+    Build an outfit that must include a specific wardrobe item.
+
+    Args:
+        user_id: ID of the user
+        item_id: ID of the item that must be included
+
+    Returns:
+        Tuple of (must_use_item, List of complementary WardrobeItems)
+    """
+    must_use = WardrobeItem.query.filter_by(id=item_id, user_id=user_id).first()
+    if not must_use:
+        return None, []
+
+    all_items = WardrobeItem.query.filter_by(user_id=user_id).all()
+    others = [i for i in all_items if i.id != item_id]
+
+    complements = []
+    # Try to pick complementary categories
+    cat = must_use.category.lower()
+    if cat in ['shirt', 'blouse', 'sweater', 'top']:
+        complements = [i for i in others if i.category.lower() in ['pants', 'jeans', 'shorts', 'skirt']]
+    elif cat in ['pants', 'jeans', 'shorts', 'skirt']:
+        complements = [i for i in others if i.category.lower() in ['shirt', 'blouse', 'sweater', 'top']]
+
+    # Always try to add shoes
+    shoes = [i for i in others if i.category.lower() in ['shoes', 'boot', 'sneaker']]
+    if shoes:
+        complements.append(random.choice(shoes))
+
+    if not complements:
+        complements = random.sample(others, min(2, len(others))) if others else []
+
+    return must_use, complements[:3]
+
+
 def _determine_weather_category(temperature, condition):
     """
     Helper function to determine weather category from temperature and condition.

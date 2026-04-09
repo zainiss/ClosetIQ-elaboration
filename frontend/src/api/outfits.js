@@ -21,6 +21,20 @@ export const getByDressCode = async (dressCode) => {
   });
 };
 
+export const getByColor = async (color) => {
+  return apiRequest('/outfits/by-color', {
+    method: 'POST',
+    body: JSON.stringify({ color }),
+  });
+};
+
+export const getWithItem = async (itemId) => {
+  return apiRequest('/outfits/with-item', {
+    method: 'POST',
+    body: JSON.stringify({ item_id: itemId }),
+  });
+};
+
 export const saveOutfit = async (data) => {
   return apiRequest('/outfits', {
     method: 'POST',
