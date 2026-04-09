@@ -20,8 +20,8 @@ const WardrobeItemCard = ({ item, onDelete, onTagsUpdated }) => {
   return (
     <div className="wardrobe-item-card">
       <div className="item-image">
-        {item.image_url ? (
-          <img src={item.image_url} alt={item.name} />
+        {item.image_path ? (
+          <img src={process.env.REACT_APP_API_URL + '/wardrobe/uploads/' + item.image_path} alt={item.name} />
         ) : (
           <div className="placeholder">
             <span>No Image</span>
