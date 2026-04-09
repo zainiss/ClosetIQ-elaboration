@@ -153,6 +153,6 @@ def set_tags(item_id):
 def serve_upload(filename):
     """Serve uploaded image files"""
     try:
-        return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename), 200
+        return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
     except Exception:
         return jsonify({'error': 'File not found'}), 404
