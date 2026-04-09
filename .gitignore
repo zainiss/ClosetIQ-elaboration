@@ -1,0 +1,49 @@
+# AI/Automation artifacts - not part of the project
+CLAUDE.md
+Github usernames.txt
+.claude/
+*.claude
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+dist/
+build/
+*.egg-info/
+.eggs/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.log
+
+# React/Node
+node_modules/
+/frontend/build/
+/frontend/.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
