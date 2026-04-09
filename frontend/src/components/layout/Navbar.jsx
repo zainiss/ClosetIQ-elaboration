@@ -28,6 +28,11 @@ const Navbar = () => {
           <li>
             <Link to="/outfits">Outfits</Link>
           </li>
+          {user && user.is_admin && (
+            <li>
+              <Link to="/admin">Admin</Link>
+            </li>
+          )}
         </ul>
 
         <div className="navbar-user">

@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import WardrobePage from './pages/WardrobePage';
 import OutfitsPage from './pages/OutfitsPage';
+import AdminPage from './pages/AdminPage';
 import './styles/global.css';
 
 const App = () => {
@@ -31,6 +32,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <OutfitsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPage />
             </ProtectedRoute>
           }
         />

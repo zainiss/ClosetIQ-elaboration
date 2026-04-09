@@ -9,11 +9,14 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     # Relationships
     wardrobe_items = db.relationship('WardrobeItem', backref='user', lazy=True, cascade='all, delete-orphan')
     outfits = db.relationship('Outfit', backref='user', lazy=True, cascade='all, delete-orphan')
+    activity_logs = db.relationship('ActivityLog', backref='user', lazy=True, foreign_keys='ActivityLog.user_id')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -26,5 +29,7 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
+            'is_admin': self.is_admin,
+            'is_active': self.is_active,
             'created_at': self.created_at.isoformat()
         }
