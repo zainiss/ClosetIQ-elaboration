@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import Navbar from './components/layout/Navbar';
@@ -12,6 +12,14 @@ import './styles/global.css';
 
 const App = () => {
   const { isAuthenticated } = useContext(AuthContext);
+  const [highContrast, setHighContrast] = useState(
+    () => localStorage.getItem('highContrast') === 'true'
+  );
+
+  useEffect(() => {
+    document.body.classList.toggle('high-contrast', highContrast);
+    localStorage.setItem('highContrast', highContrast);
+  }, [highContrast]);
 
   return (
     <Router>
@@ -45,6 +53,14 @@ const App = () => {
         />
         <Route path="/" element={<Navigate to="/wardrobe" replace />} />
       </Routes>
+      <button
+        className="hc-toggle"
+        onClick={() => setHighContrast((v) => !v)}
+        aria-label="Toggle high contrast mode"
+        title="Toggle high contrast mode"
+      >
+        {highContrast ? 'Standard View' : 'High Contrast'}
+      </button>
     </Router>
   );
 };
