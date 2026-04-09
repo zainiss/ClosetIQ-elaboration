@@ -99,11 +99,11 @@ def build_outfit_from_items(items):
     }
 
     # Categorize items
-    tops = [i for i in items if i.category.lower() in ['shirt', 'blouse', 'sweater', 'top']]
-    bottoms = [i for i in items if i.category.lower() in ['pants', 'jeans', 'shorts', 'skirt', 'leggings']]
-    shoes = [i for i in items if i.category.lower() in ['shoes', 'boot', 'sneaker']]
-    outerwear = [i for i in items if i.category.lower() in ['jacket', 'coat', 'blazer']]
-    accessories = [i for i in items if i.category.lower() in ['belt', 'scarf', 'hat', 'accessory']]
+    tops = [i for i in items if i.category.lower() in ['shirt', 'blouse', 'sweater', 'top', 't-shirt', 'tshirt']]
+    bottoms = [i for i in items if i.category.lower() in ['pants', 'jeans', 'shorts', 'skirt', 'leggings', 'trousers']]
+    shoes = [i for i in items if i.category.lower() in ['shoes', 'boot', 'boots', 'sneaker', 'sneakers', 'heel', 'heels', 'loafer', 'loafers', 'sandal', 'sandals']]
+    outerwear = [i for i in items if i.category.lower() in ['jacket', 'coat', 'blazer', 'hoodie', 'cardigan']]
+    accessories = [i for i in items if i.category.lower() in ['belt', 'scarf', 'hat', 'accessory', 'bag', 'watch', 'jewelry']]
 
     # Pick one from each category if available
     if tops:
@@ -179,6 +179,39 @@ def recommend_with_item(user_id, item_id):
         complements = random.sample(others, min(2, len(others))) if others else []
 
     return must_use, complements[:3]
+
+
+SHOE_CATEGORIES = {'shoes', 'boot', 'boots', 'sneaker', 'sneakers', 'heel', 'heels', 'loafer', 'loafers', 'sandal', 'sandals'}
+
+
+def recommend_with_shoes(user_id, occasion=None):
+    """
+    Recommend an outfit that explicitly includes a shoe recommendation.
+
+    Args:
+        user_id: ID of the user
+        occasion: Optional occasion string
+
+    Returns:
+        Dict with outfit items, guaranteed to include a shoe if user has any
+    """
+    items = WardrobeItem.query.filter_by(user_id=user_id).all()
+
+    shoes = [i for i in items if i.category.lower() in SHOE_CATEGORIES]
+    non_shoes = [i for i in items if i.category.lower() not in SHOE_CATEGORIES]
+
+    if occasion:
+        occasion_lower = occasion.lower()
+        filtered = [i for i in non_shoes if occasion_lower in [t.lower() for t in i.occasion_tags_list]]
+        if filtered:
+            non_shoes = filtered
+
+    selected = random.sample(non_shoes, min(4, len(non_shoes))) if non_shoes else []
+    if shoes:
+        selected.append(random.choice(shoes))
+
+    outfit = build_outfit_from_items(selected)
+    return {'items': selected, 'outfit': outfit, 'shoe_included': bool(shoes)}
 
 
 def recommend_multiple(user_id, occasion=None, count=3):

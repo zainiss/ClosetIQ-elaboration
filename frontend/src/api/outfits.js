@@ -28,6 +28,13 @@ export const getMultipleOutfits = async (occasion = null, count = 3) => {
   });
 };
 
+export const getWithShoes = async (occasion = null) => {
+  return apiRequest('/outfits/with-shoes', {
+    method: 'POST',
+    body: JSON.stringify({ occasion }),
+  });
+};
+
 export const getByColor = async (color) => {
   return apiRequest('/outfits/by-color', {
     method: 'POST',

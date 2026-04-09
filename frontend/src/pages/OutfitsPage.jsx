@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getByOccasion, getByWeather, getByDressCode, getByColor, getWithItem, getMultipleOutfits } from '../api/outfits';
+import { getByOccasion, getByWeather, getByDressCode, getByColor, getWithItem, getMultipleOutfits, getWithShoes } from '../api/outfits';
 import { getItems } from '../api/wardrobe';
 import OutfitResult from '../components/outfits/OutfitResult';
 import '../styles/outfits.css';
@@ -27,6 +27,11 @@ const OutfitsPage = () => {
   const [colorInput, setColorInput] = useState('');
   const [colorResults, setColorResults] = useState(null);
   const [colorLoading, setColorLoading] = useState(false);
+
+  // With Shoes
+  const [shoesOccasion, setShoesOccasion] = useState('');
+  const [shoesResults, setShoesResults] = useState(null);
+  const [shoesLoading, setShoesLoading] = useState(false);
 
   // Multiple Options
   const [multipleOccasion, setMultipleOccasion] = useState('');
@@ -100,6 +105,20 @@ const OutfitsPage = () => {
       setError(err.message);
     } finally {
       setDressCodeLoading(false);
+    }
+  };
+
+  const handleShoesSubmit = async (e) => {
+    e.preventDefault();
+    setShoesLoading(true);
+    setError(null);
+    try {
+      const results = await getWithShoes(shoesOccasion || null);
+      setShoesResults(results);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setShoesLoading(false);
     }
   };
 
@@ -235,6 +254,37 @@ const OutfitsPage = () => {
           </div>
           {dressCodeLoading && <div className="loading">Finding outfits...</div>}
           {renderResults(dressCodeResults, `Dress Code: ${selectedDressCode}`)}
+        </section>
+
+        {/* Include Shoes (PM-14) */}
+        <section className="recommendation-section">
+          <h2>Complete Look with Shoes</h2>
+          <p className="section-description">Get a full outfit recommendation that always includes footwear.</p>
+          <form className="weather-form" onSubmit={handleShoesSubmit}>
+            <div className="form-row">
+              <input
+                type="text"
+                placeholder="Occasion (optional)"
+                value={shoesOccasion}
+                onChange={(e) => setShoesOccasion(e.target.value)}
+                className="temp-input"
+              />
+              <button type="submit" className="submit-btn">Get Complete Look</button>
+            </div>
+          </form>
+          {shoesLoading && <div className="loading">Building complete look...</div>}
+          {shoesResults && (
+            <div className="results">
+              {!shoesResults.shoe_included && (
+                <p className="warning-message">No shoes found in your wardrobe — add some for complete looks!</p>
+              )}
+              <OutfitResult
+                items={shoesResults.items || []}
+                outfit={shoesResults.outfit}
+                label={`Complete Look${shoesOccasion ? ` — ${shoesOccasion}` : ''}`}
+              />
+            </div>
+          )}
         </section>
 
         {/* Multiple Outfit Options (PM-13) */}
