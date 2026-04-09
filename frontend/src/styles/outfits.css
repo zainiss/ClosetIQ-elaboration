@@ -1,0 +1,210 @@
+.outfits-page {
+  flex: 1;
+  padding: 0;
+}
+
+.outfits-header {
+  background: var(--white);
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.outfits-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.outfits-header p {
+  color: var(--dark-gray);
+  font-size: 0.875rem;
+}
+
+.recommendations-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.recommendation-section {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-section h2 {
+  margin-bottom: 1.5rem;
+  color: var(--text-dark);
+}
+
+.buttons-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.occasion-btn,
+.dress-code-btn {
+  padding: 0.75rem 1rem;
+  background: var(--light-gray);
+  color: var(--text-dark);
+  border: 2px solid transparent;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.occasion-btn:hover,
+.dress-code-btn:hover {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.occasion-btn.active,
+.dress-code-btn.active {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.weather-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.weather-form .form-group {
+  margin-bottom: 0;
+}
+
+.weather-form .form-group label {
+  margin-bottom: 0.5rem;
+  display: block;
+  font-weight: 500;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.outfit-result {
+  background: var(--light-gray);
+  padding: 1rem;
+  border-radius: 0.375rem;
+  border-left: 4px solid var(--primary);
+}
+
+.outfit-label {
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.outfit-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.outfit-item {
+  display: flex;
+  gap: 1rem;
+  background: var(--white);
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+}
+
+.outfit-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 0.25rem;
+  background: var(--light-gray);
+}
+
+.item-placeholder {
+  width: 80px;
+  height: 80px;
+  background: var(--light-gray);
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--medium-gray);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.item-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.item-name {
+  margin: 0;
+  font-weight: 500;
+  color: var(--text-dark);
+  font-size: 0.875rem;
+}
+
+.item-category {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: var(--dark-gray);
+}
+
+.item-color {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: var(--dark-gray);
+}
+
+.no-items,
+.no-results {
+  text-align: center;
+  padding: 1rem;
+  color: var(--dark-gray);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--dark-gray);
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .recommendations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .buttons-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .occasion-btn,
+  .dress-code-btn {
+    flex: 1;
+    min-width: 45%;
+  }
+}
