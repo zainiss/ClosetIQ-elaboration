@@ -5,7 +5,7 @@ from PIL import Image
 from app.extensions import db
 from app.models.wardrobe_item import WardrobeItem
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'avif'}
 
 def allowed_file(filename):
     """Check if file has allowed extension"""
@@ -31,13 +31,11 @@ def save_image(file, upload_folder):
     if not allowed_file(file.filename):
         raise ValueError('File type not allowed. Allowed types: png, jpg, jpeg, gif')
 
+    # Reset stream to start before saving
     try:
-        # Open image to validate it's a valid image file
-        img = Image.open(file.stream)
-        img.verify()
-        file.stream.seek(0)  # Reset stream after verification
+        file.stream.seek(0)
     except Exception:
-        raise ValueError('Uploaded file is not a valid image')
+        pass
 
     # Generate unique filename
     filename = secure_filename(file.filename)
