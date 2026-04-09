@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getByOccasion, getByWeather, getByDressCode, getByColor, getWithItem } from '../api/outfits';
+import { getByOccasion, getByWeather, getByDressCode, getByColor, getWithItem, getMultipleOutfits } from '../api/outfits';
 import { getItems } from '../api/wardrobe';
 import OutfitResult from '../components/outfits/OutfitResult';
 import '../styles/outfits.css';
@@ -27,6 +27,11 @@ const OutfitsPage = () => {
   const [colorInput, setColorInput] = useState('');
   const [colorResults, setColorResults] = useState(null);
   const [colorLoading, setColorLoading] = useState(false);
+
+  // Multiple Options
+  const [multipleOccasion, setMultipleOccasion] = useState('');
+  const [multipleResults, setMultipleResults] = useState(null);
+  const [multipleLoading, setMultipleLoading] = useState(false);
 
   // Must-Use Item
   const [wardrobeItems, setWardrobeItems] = useState([]);
@@ -95,6 +100,20 @@ const OutfitsPage = () => {
       setError(err.message);
     } finally {
       setDressCodeLoading(false);
+    }
+  };
+
+  const handleMultipleSubmit = async (e) => {
+    e.preventDefault();
+    setMultipleLoading(true);
+    setError(null);
+    try {
+      const results = await getMultipleOutfits(multipleOccasion || null, 3);
+      setMultipleResults(results);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setMultipleLoading(false);
     }
   };
 
@@ -216,6 +235,41 @@ const OutfitsPage = () => {
           </div>
           {dressCodeLoading && <div className="loading">Finding outfits...</div>}
           {renderResults(dressCodeResults, `Dress Code: ${selectedDressCode}`)}
+        </section>
+
+        {/* Multiple Outfit Options (PM-13) */}
+        <section className="recommendation-section">
+          <h2>Multiple Outfit Options</h2>
+          <p className="section-description">Generate 3 different outfit combinations to choose from.</p>
+          <form className="weather-form" onSubmit={handleMultipleSubmit}>
+            <div className="form-row">
+              <input
+                type="text"
+                placeholder="Occasion (optional)"
+                value={multipleOccasion}
+                onChange={(e) => setMultipleOccasion(e.target.value)}
+                className="temp-input"
+              />
+              <button type="submit" className="submit-btn">Generate Options</button>
+            </div>
+          </form>
+          {multipleLoading && <div className="loading">Generating outfit options...</div>}
+          {multipleResults && (
+            <div className="results">
+              {multipleResults.options && multipleResults.options.length === 0 ? (
+                <p className="no-results">No outfit options found — add more items to your wardrobe</p>
+              ) : (
+                multipleResults.options && multipleResults.options.map((option, idx) => (
+                  <OutfitResult
+                    key={idx}
+                    items={option.items}
+                    outfit={option.outfit}
+                    label={`Option ${idx + 1}${multipleOccasion ? ` — ${multipleOccasion}` : ''}`}
+                  />
+                ))
+              )}
+            </div>
+          )}
         </section>
 
         {/* By Color Preference (PM-11) */}

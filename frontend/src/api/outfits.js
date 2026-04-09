@@ -21,6 +21,13 @@ export const getByDressCode = async (dressCode) => {
   });
 };
 
+export const getMultipleOutfits = async (occasion = null, count = 3) => {
+  return apiRequest('/outfits/multiple', {
+    method: 'POST',
+    body: JSON.stringify({ occasion, count }),
+  });
+};
+
 export const getByColor = async (color) => {
   return apiRequest('/outfits/by-color', {
     method: 'POST',

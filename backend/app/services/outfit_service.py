@@ -181,6 +181,48 @@ def recommend_with_item(user_id, item_id):
     return must_use, complements[:3]
 
 
+def recommend_multiple(user_id, occasion=None, count=3):
+    """
+    Generate multiple distinct outfit options for a given occasion.
+
+    Args:
+        user_id: ID of the user
+        occasion: Optional occasion string to filter by
+        count: Number of outfit options to generate (default 3)
+
+    Returns:
+        List of outfit dicts, each built from different item combinations
+    """
+    items = WardrobeItem.query.filter_by(user_id=user_id).all()
+
+    if occasion:
+        occasion_lower = occasion.lower()
+        filtered = [i for i in items if occasion_lower in [t.lower() for t in i.occasion_tags_list]]
+        if filtered:
+            items = filtered
+
+    if not items:
+        return []
+
+    outfits = []
+    used_combinations = set()
+
+    attempts = 0
+    while len(outfits) < count and attempts < count * 10:
+        attempts += 1
+        sample = random.sample(items, min(5, len(items)))
+        outfit = build_outfit_from_items(sample)
+        if not outfit:
+            continue
+        # Use frozenset of item ids to detect duplicates
+        key = frozenset(v['id'] for v in outfit.values() if isinstance(v, dict))
+        if key not in used_combinations:
+            used_combinations.add(key)
+            outfits.append({'items': sample, 'outfit': outfit})
+
+    return outfits
+
+
 def _determine_weather_category(temperature, condition):
     """
     Helper function to determine weather category from temperature and condition.
