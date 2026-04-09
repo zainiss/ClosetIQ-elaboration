@@ -1,8 +1,15 @@
-// In-memory token storage
-let token = null;
+const TOKEN_KEY = 'closetiq_token';
+
+// Load token from localStorage on startup
+let token = localStorage.getItem(TOKEN_KEY);
 
 export const setToken = (newToken) => {
   token = newToken;
+  if (newToken) {
+    localStorage.setItem(TOKEN_KEY, newToken);
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+  }
 };
 
 export const getToken = () => {

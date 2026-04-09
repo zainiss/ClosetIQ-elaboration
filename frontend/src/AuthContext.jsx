@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setTokenState] = useState(null);
+  const [token, setTokenState] = useState(() => localStorage.getItem('closetiq_token'));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
