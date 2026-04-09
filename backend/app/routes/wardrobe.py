@@ -32,14 +32,6 @@ def upload_photo():
     """Upload a clothing item via photo"""
     user_id = int(get_jwt_identity())
 
-    # Check if file is present
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image file provided'}), 400
-
-    file = request.files['image']
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
-
     # Get form data
     name = request.form.get('name')
     category = request.form.get('category')
@@ -47,11 +39,14 @@ def upload_photo():
     if not name or not category:
         return jsonify({'error': 'Missing required fields (name, category)'}), 400
 
-    try:
-        # Save image
+    # Image is optional
+    image_path = None
+    file = request.files.get('image')
+    if file and file.filename != '':
         image_path = save_image(file, current_app.config['UPLOAD_FOLDER'])
 
-        # Create item from photo
+    try:
+        # Create item
         item = create_item_from_photo(user_id, {
             'name': name,
             'category': category,

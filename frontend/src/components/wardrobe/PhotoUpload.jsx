@@ -131,13 +131,12 @@ const PhotoUpload = ({ onItemAdded }) => {
       </div>
 
       <div className="form-group">
-        <label htmlFor="image">Photo *</label>
+        <label htmlFor="image">Photo</label>
         <input
           id="image"
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          required
         />
         {fileName && <p className="file-name">{fileName}</p>}
       </div>
