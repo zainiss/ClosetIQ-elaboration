@@ -8,6 +8,8 @@ import RegisterPage from './pages/RegisterPage';
 import WardrobePage from './pages/WardrobePage';
 import OutfitsPage from './pages/OutfitsPage';
 import AdminPage from './pages/AdminPage';
+import SocialPage from './pages/SocialPage';
+import ProfilePage from './pages/ProfilePage';
 import './styles/global.css';
 
 const App = () => {
@@ -48,6 +50,22 @@ const App = () => {
           element={
             <ProtectedRoute>
               <AdminPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/social"
+          element={
+            <ProtectedRoute>
+              <SocialPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
             </ProtectedRoute>
           }
         />

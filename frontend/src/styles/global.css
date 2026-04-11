@@ -1,3 +1,85 @@
+/* ===== KEYFRAME ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== ANIMATION HELPERS ===== */
+.animate-fadeInUp { animation: fadeInUp 0.45s ease both; }
+.animate-fadeIn   { animation: fadeIn   0.3s  ease both; }
+.animate-scaleIn  { animation: scaleIn  0.3s  ease both; }
+
+.delay-1 { animation-delay: 0.08s; }
+.delay-2 { animation-delay: 0.16s; }
+.delay-3 { animation-delay: 0.24s; }
+.delay-4 { animation-delay: 0.32s; }
+.delay-5 { animation-delay: 0.40s; }
+.delay-6 { animation-delay: 0.48s; }
+
+/* ===== SPINNER ===== */
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(99,102,241,0.15);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  display: inline-block;
+}
+.spinner-sm { width: 18px; height: 18px; border-width: 2px; }
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem;
+  color: var(--dark-gray);
+  font-size: var(--font-sm);
+}
+
+/* ===== SKELETON SHIMMER ===== */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--light-gray) 25%,
+    #e8eaed 50%,
+    var(--light-gray) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease infinite;
+  border-radius: 0.375rem;
+}
+
 :root {
   /* Brand colors */
   --primary: #6366f1;
@@ -243,6 +325,9 @@ small, .text-sm {
 }
 
 .tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: var(--space-2) var(--space-5);
   border: none;
   background: none;
@@ -335,24 +420,105 @@ small, .text-sm {
 
 .stat-card {
   background: var(--white);
-  border-radius: 0.5rem;
+  border-radius: 0.875rem;
   padding: var(--space-6);
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: fadeInUp 0.4s ease both;
+}
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(99,102,241,0.15);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-2);
+  display: block;
+  animation: float 3s ease-in-out infinite;
 }
 
 .stat-value {
   font-size: var(--font-3xl);
-  font-weight: 700;
-  color: var(--primary);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   line-height: 1;
   margin-bottom: var(--space-2);
+  animation: countUp 0.5s ease both;
 }
 
 .stat-label {
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   color: var(--dark-gray);
-  text-transform: capitalize;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Admin page layout */
+.admin-page { flex: 1; }
+
+.admin-header {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.admin-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-header h1 { color: white; margin-bottom: 0.25rem; }
+.admin-header p  { color: rgba(255,255,255,0.8); font-size: 0.875rem; margin: 0; }
+
+.admin-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.admin-body {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+}
+
+.tab-icon { font-size: 1rem; }
+
+.id-badge {
+  font-size: 0.75rem;
+  color: var(--dark-gray);
+  font-family: monospace;
+}
+
+.admin-tick {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.action-badge {
+  font-size: 0.75rem;
+  background: rgba(99,102,241,0.08);
+  color: var(--primary);
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.375rem;
+  font-family: monospace;
 }
 
 .btn {

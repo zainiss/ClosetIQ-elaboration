@@ -22,11 +22,13 @@ def create_app():
     from app.routes.wardrobe import wardrobe_bp
     from app.routes.outfits import outfits_bp
     from app.routes.admin import admin_bp
+    from app.routes.social import social_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(wardrobe_bp, url_prefix='/wardrobe')
     app.register_blueprint(outfits_bp, url_prefix='/outfits')
     app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(social_bp, url_prefix='/social')
 
     # Activity logging middleware — log mutating requests after they complete
     @app.after_request

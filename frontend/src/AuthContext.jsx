@@ -51,6 +51,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const updateUser = useCallback(async ({ username, bio }) => {
+    const response = await apiRequest('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify({ username, bio }),
+    });
+    setUser(response.user);
+    return response.user;
+  }, []);
+
   const logout = useCallback(() => {
     setToken(null);
     setTokenState(null);
@@ -66,6 +75,7 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
+        updateUser,
         isAuthenticated: !!token,
       }}
     >

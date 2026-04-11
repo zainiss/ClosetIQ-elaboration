@@ -148,11 +148,139 @@ def get_stats():
 
     from app.models.wardrobe_item import WardrobeItem
     from app.models.outfit import Outfit
+    from app.models.social import SharedOutfit, OutfitComment
 
     return jsonify({
         'total_users': User.query.count(),
         'active_users': User.query.filter_by(is_active=True).count(),
         'total_wardrobe_items': WardrobeItem.query.count(),
         'total_saved_outfits': Outfit.query.count(),
+        'total_shared_outfits': SharedOutfit.query.count(),
         'total_activity_events': ActivityLog.query.count()
     }), 200
+
+
+# ── Content Moderation ───────────────────────────────────────────────────────
+
+@admin_bp.route('/moderation/outfits', methods=['GET'])
+@jwt_required()
+def list_shared_outfits():
+    """List all shared outfits for moderation (admin only)"""
+    admin = _require_admin()
+    if not admin:
+        return jsonify({'error': 'Admin access required'}), 403
+
+    from app.models.social import SharedOutfit
+    limit = min(int(request.args.get('limit', 50)), 200)
+    offset = int(request.args.get('offset', 0))
+    hidden_only = request.args.get('hidden') == 'true'
+
+    query = SharedOutfit.query
+    if hidden_only:
+        query = query.filter_by(is_hidden=True)
+    total = query.count()
+    outfits = query.order_by(SharedOutfit.created_at.desc()).offset(offset).limit(limit).all()
+
+    return jsonify({
+        'total': total,
+        'outfits': [o.to_dict() for o in outfits],
+    }), 200
+
+
+@admin_bp.route('/moderation/outfits/<int:outfit_id>/hide', methods=['POST'])
+@jwt_required()
+def hide_outfit(outfit_id):
+    """Hide a shared outfit from the feed (admin only)"""
+    admin = _require_admin()
+    if not admin:
+        return jsonify({'error': 'Admin access required'}), 403
+
+    from app.models.social import SharedOutfit
+    outfit = SharedOutfit.query.get_or_404(outfit_id)
+    outfit.is_hidden = True
+    db.session.commit()
+    log_action(admin.id, 'hide_outfit', resource='shared_outfit', resource_id=outfit_id)
+    return jsonify({'message': 'Outfit hidden from feed'}), 200
+
+
+@admin_bp.route('/moderation/outfits/<int:outfit_id>/unhide', methods=['POST'])
+@jwt_required()
+def unhide_outfit(outfit_id):
+    """Restore a hidden shared outfit (admin only)"""
+    admin = _require_admin()
+    if not admin:
+        return jsonify({'error': 'Admin access required'}), 403
+
+    from app.models.social import SharedOutfit
+    outfit = SharedOutfit.query.get_or_404(outfit_id)
+    outfit.is_hidden = False
+    db.session.commit()
+    log_action(admin.id, 'unhide_outfit', resource='shared_outfit', resource_id=outfit_id)
+    return jsonify({'message': 'Outfit restored to feed'}), 200
+
+
+@admin_bp.route('/moderation/outfits/<int:outfit_id>', methods=['DELETE'])
+@jwt_required()
+def admin_delete_outfit(outfit_id):
+    """Permanently delete a shared outfit (admin only)"""
+    admin = _require_admin()
+    if not admin:
+        return jsonify({'error': 'Admin access required'}), 403
+
+    from app.models.social import SharedOutfit
+    outfit = SharedOutfit.query.get_or_404(outfit_id)
+    db.session.delete(outfit)
+    db.session.commit()
+    log_action(admin.id, 'delete_outfit', resource='shared_outfit', resource_id=outfit_id)
+    return jsonify({'message': 'Shared outfit deleted'}), 200
+
+
+@admin_bp.route('/moderation/comments', methods=['GET'])
+@jwt_required()
+def list_flagged_comments():
+    """List flagged (reported) comments for review (admin only)"""
+    admin = _require_admin()
+    if not admin:
+        return jsonify({'error': 'Admin access required'}), 403
+
+    from app.models.social import OutfitComment
+    flagged = (
+        OutfitComment.query
+        .filter_by(is_flagged=True, is_deleted=False)
+        .order_by(OutfitComment.created_at.desc())
+        .all()
+    )
+    return jsonify([c.to_dict() for c in flagged]), 200
+
+
+@admin_bp.route('/moderation/comments/<int:comment_id>/dismiss', methods=['POST'])
+@jwt_required()
+def dismiss_flag(comment_id):
+    """Clear the flag on a comment without deleting it (admin only)"""
+    admin = _require_admin()
+    if not admin:
+        return jsonify({'error': 'Admin access required'}), 403
+
+    from app.models.social import OutfitComment
+    comment = OutfitComment.query.get_or_404(comment_id)
+    comment.is_flagged = False
+    db.session.commit()
+    log_action(admin.id, 'dismiss_flag', resource='comment', resource_id=comment_id)
+    return jsonify({'message': 'Flag dismissed'}), 200
+
+
+@admin_bp.route('/moderation/comments/<int:comment_id>', methods=['DELETE'])
+@jwt_required()
+def admin_delete_comment(comment_id):
+    """Soft-delete a comment via admin moderation (admin only)"""
+    admin = _require_admin()
+    if not admin:
+        return jsonify({'error': 'Admin access required'}), 403
+
+    from app.models.social import OutfitComment
+    comment = OutfitComment.query.get_or_404(comment_id)
+    comment.is_deleted = True
+    comment.is_flagged = False
+    db.session.commit()
+    log_action(admin.id, 'delete_comment', resource='comment', resource_id=comment_id)
+    return jsonify({'message': 'Comment deleted'}), 200

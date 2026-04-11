@@ -1,11 +1,11 @@
-import { apiRequest, getToken } from './client';
+import { apiRequest, getToken, getApiBaseUrl } from './client';
 
 export const getItems = async () => {
   return apiRequest('/wardrobe/items');
 };
 
 export const uploadPhoto = async (formData) => {
-  const baseUrl = process.env.REACT_APP_API_URL;
+  const baseUrl = getApiBaseUrl();
   const token = getToken();
 
   const headers = {};
@@ -13,11 +13,20 @@ export const uploadPhoto = async (formData) => {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${baseUrl}/wardrobe/items/photo`, {
-    method: 'POST',
-    headers,
-    body: formData,
-  });
+  let response;
+  try {
+    response = await fetch(`${baseUrl}/wardrobe/items/photo`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+  } catch {
+    throw new Error(
+      process.env.NODE_ENV === 'development'
+        ? 'Failed to reach the API. Is the backend running on port 5000?'
+        : 'Failed to reach the API.'
+    );
+  }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));

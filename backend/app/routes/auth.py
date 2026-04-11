@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app.extensions import db
 from app.models.user import User
 
@@ -54,3 +54,37 @@ def login():
         'access_token': access_token,
         'user': user.to_dict()
     }), 200
+
+
+@auth_bp.route('/me', methods=['GET'])
+@jwt_required()
+def get_me():
+    """Return the current user's profile."""
+    user_id = int(get_jwt_identity())
+    user = User.query.get_or_404(user_id)
+    return jsonify(user.to_dict()), 200
+
+
+@auth_bp.route('/profile', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    """Update username and/or bio for the current user."""
+    user_id = int(get_jwt_identity())
+    user = User.query.get_or_404(user_id)
+    data = request.get_json() or {}
+
+    new_username = data.get('username', '').strip()
+    new_bio = data.get('bio', None)
+
+    if new_username and new_username != user.username:
+        if len(new_username) < 3:
+            return jsonify({'error': 'Username must be at least 3 characters'}), 400
+        if User.query.filter_by(username=new_username).first():
+            return jsonify({'error': 'Username already taken'}), 409
+        user.username = new_username
+
+    if new_bio is not None:
+        user.bio = new_bio.strip()[:300] or None
+
+    db.session.commit()
+    return jsonify({'message': 'Profile updated', 'user': user.to_dict()}), 200

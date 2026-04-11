@@ -16,8 +16,17 @@ export const getToken = () => {
   return token;
 };
 
+/** In development, use relative URLs so the CRA dev server proxies to Flask (see package.json "proxy"). */
+export const getApiBaseUrl = () => {
+  if (process.env.NODE_ENV === 'development') {
+    return '';
+  }
+  const raw = process.env.REACT_APP_API_URL;
+  return raw ? String(raw).replace(/\/$/, '') : '';
+};
+
 export const apiRequest = async (path, options = {}) => {
-  const baseUrl = process.env.REACT_APP_API_URL;
+  const baseUrl = getApiBaseUrl();
   const url = `${baseUrl}${path}`;
 
   const headers = {
@@ -29,14 +38,23 @@ export const apiRequest = async (path, options = {}) => {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+    });
+  } catch {
+    const devHint =
+      process.env.NODE_ENV === 'development'
+        ? ' Is the backend running? From the repo root: cd backend && source venv/bin/activate && python run.py'
+        : '';
+    throw new Error(`Failed to reach the API.${devHint}`);
+  }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `API error: ${response.status}`);
+    throw new Error(errorData.error || errorData.message || errorData.msg || `API error: ${response.status}`);
   }
 
   const contentType = response.headers.get('content-type');
